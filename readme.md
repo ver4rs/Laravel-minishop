@@ -10,7 +10,8 @@
 
 
 ## Tutorial
-
+- create products migration with attributes image1, image2, image3 without new table images
+- create table users
 
 
 ## Instalation
