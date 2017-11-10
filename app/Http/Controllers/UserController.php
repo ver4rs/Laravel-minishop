@@ -11,7 +11,7 @@ class UserController extends Controller
     public function __construct()
     {
         //  Authorize for all class
-        $this->authorize('isAdmin', Auth::user());
+//        $this->authorize('isAdmin', Auth::user());
     }
 
 

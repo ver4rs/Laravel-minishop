@@ -41,7 +41,7 @@
                                     {!! Form::open(['route'=> array('user.destroy', $item->id), 'id' => 'delete-form', 'style' => '']) !!}
                                         {{ csrf_field() }}
                                         {{ method_field('DELETE') }}
-                                        {!! Form::button('button', ['type' => 'submit', 'class' => 'btn btn-small btn-danger', 'title' => 'delete']) !!}
+                                        {!! Form::button('delete', ['type' => 'submit', 'class' => 'btn btn-small btn-danger', 'title' => 'delete']) !!}
 
                                     {!! Form::close() !!}
 
