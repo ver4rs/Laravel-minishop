@@ -10,8 +10,15 @@
 
 
 ## Tutorial
-- create products migration with attributes image1, image2, image3 without new table images
-- create table users
+- create products migration with attributes image1, image2, image3 without new table images, because this project is smaller, it is for presentation code
+- create table users, products
+- login, register, logout
+- dashboard with form for login and register. I used bootstrap.
+- admin dashboard
+- managing users in admin
+- managing products in admin and dashboard
+
+
 
 
 ## Instalation
@@ -19,10 +26,15 @@
 - composer install in terminal
 - php artisan key:generate
 - setting database connection
+- php artisan migrate
+- run
 
 
-## Information
-
+## Features 
+- login and register user
+- managing users
+- managing products with photos
+- dashboard with all products and detail info about product after click 'buy'
 
 
 ## About Laravel
