@@ -2,13 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper\StorageHelper;
 use App\Http\Requests\ProductRequest;
 use App\Product;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
+    /**
+     * @var StorageHelper
+     */
+    protected $storageHelper;
+
+    public function __construct(StorageHelper $storageHelper)
+    {
+        $this->storageHelper = $storageHelper;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -49,7 +59,7 @@ class ProductController extends Controller
 
         //  Save images
         foreach ($request->allFiles() as $key => $file) {
-            $data[$key] = $this->saveImage($file);
+            $data[$key] = $this->storageHelper->saveImage($file);
         }
 
 
@@ -68,7 +78,7 @@ class ProductController extends Controller
     public function show($id)
     {
         $product = Product::findOrFail($id);
-        
+
         return view('products.show')->with('product', $product);
     }
 
@@ -100,10 +110,10 @@ class ProductController extends Controller
         foreach ($request->allFiles() as $key => $file) {
 
             if ($product->$key) {
-                $this->deleteImage($product->$key);
+                $this->storageHelper->deleteImage($product->$key);
             }
 
-            $data[$key] = $this->saveImage($file);
+            $data[$key] = $this->storageHelper->saveImage($file);
         }
 
         $product->update($data);
@@ -124,42 +134,17 @@ class ProductController extends Controller
 
         //  Delete image
         if (!is_null($product->image1)) {
-            $this->deleteImage($product->image1, 'products');
+            $this->storageHelper->deleteImage($product->image1, 'products');
         }
         if (!is_null($product->image2)) {
-            $this->deleteImage($product->image2, 'products');
+            $this->storageHelper->deleteImage($product->image2, 'products');
         }
         if (!is_null($product->image3)) {
-            $this->deleteImage($product->image3, 'products');
+            $this->storageHelper->deleteImage($product->image3, 'products');
         }
 
         $product->delete();
 
         return redirect()->route('product.index')->with('status', 'Product deleted');
-    }
-
-    /**
-     * Delete image from storage
-     * @param string $name
-     * @param string $path default products
-     */
-    private function deleteImage($name, $path = 'products')
-    {
-        Storage::disk('images')->delete(($path ? $path . '/' : '') . $name);
-    }
-
-    /**
-     * Save image
-     * @param $file
-     * @param string $disk
-     * @param string $path
-     * @return string
-     */
-    private function saveImage($file, $disk = 'images', $path = 'products')
-    {
-        $name = sha1(microtime()) . '.jpg';
-        Storage::disk($disk)->putFileAs($path, $file, $name);
-
-        return $name;
     }
 }
