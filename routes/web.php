@@ -35,4 +35,11 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 //	Route::patch('product/{id}', 'ProductController@update')->name('product.update');
 
 
+	Route::get('shopping', 'CartController@index')->name('shopping.index'); // show shopping list
+	Route::post('shopping', 'CartController@store')->name('shopping.store'); // save item to shopping basket
+	Route::patch('shopping/{id}/update', 'CartController@update')->name('shopping.update'); // update item in shopping basket
+	Route::delete('shopping/{id}/delete', 'CartController@destroy')->name('shopping.destroy'); // delete item in shopping basket
+
+
+
 });

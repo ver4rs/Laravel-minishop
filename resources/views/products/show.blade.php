@@ -19,12 +19,13 @@
                 <p>{{ $product->description }}</p>
                 <p><strong>Count:</strong>&nbsp; {{ $product->count }}</p>
 
-                {!! Form::open(['method' => 'POST', 'url' => '', 'class' => 'form']) !!}
+                {!! Form::open(['method' => 'POST', 'route' => array('shopping.store'), 'class' => 'form']) !!}
                     {{ csrf_field() }}
 
                 <div class="form-group">
                     {!! Form::label('count', 'Count', ['class' => 'col-sm-3 control-label']) !!}
                     <div class="col-sm-9">
+                        {!! Form::hidden('id', $product->id) !!}
                         {!! Form::number('count', 1, ['class' => 'form-control ', 'min' => '1', 'max' => $product->count, 'value' => '1']) !!}
                         {!! Form::button('Buy', ['type' => 'submit', 'class' => 'btn btn-success  btn-block']) !!}
                     </div>
