@@ -38,6 +38,7 @@
                             <li>
                                 @can('isAdmin', App\User::class)
                                     <a href="{{ route('user.index') }}">Users</a>
+                                    <a href="{{ route('product.index') }}">Products</a>
                                 @endcan
                                 <a href="{{ route('logout') }}"
                                    onclick="event.preventDefault();

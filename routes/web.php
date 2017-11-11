@@ -16,7 +16,7 @@
 
 Auth::routes();
 
-Route::get('/', 'HomeController@index')->name('home');
+Route::get('/', 'HomeController@index')->name('home.index');
 
 Route::prefix('admin')->middleware(['auth'])->group(function () {
 
@@ -27,6 +27,12 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 	Route::patch('users/{id}/edit', 'UserController@update')->name('user.update')->middleware('can:isAdmin,App\User');;
 
 
+	Route::resource('product', 'ProductController');
+//	Route::get('product', 'ProductController@index')->name('product.index');
+//	Route::get('product/create', 'ProductController@create')->name('product.create');
+//	Route::post('product', 'ProductController@store')->name('product.store');
+//	Route::get('product/{id}/edit', 'ProductController@edit')->name('product.edit');
+//	Route::patch('product/{id}', 'ProductController@update')->name('product.update');
 
 
 });

@@ -17,6 +17,7 @@ class CreateProductsTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->mediumText('description');
+            $table->decimal('number');
             $table->integer('count');
             $table->string('image1');
             $table->string('image2');
