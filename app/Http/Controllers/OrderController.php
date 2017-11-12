@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
-    public $cartLogic;
+    private $cartLogic;
     private $userId;
 
     public function __construct(CartLogic $cartLogic)

@@ -59,6 +59,53 @@ class CartLogic
 		return $total;
 	}
 
+	/**
+	 * Make object Cart
+	 * @param $userId
+	 * @return Cart
+	 */
+	private function makeCart($userId)
+	{
+		$cart = new Cart;
+		$cart->user_id = $userId;
+		$cart->token = sha1(microtime());
+		$cart->save();
+
+		return $cart;
+	}
+
+	/**
+	 * Update count item 'product' in shopping list
+	 * @param $id
+	 * @param $count
+	 */
+	public function updateCountItem($id, $count)
+	{
+		$item = Auth::user()->cart->items()->findOrFail($id);
+
+		if ($item) {
+			$item->count = $count;
+			$item->update();
+		}
+	}
+
+	/**
+	 * Add item to Cart 'Shopping list'
+	 * @param $userId
+	 * @param $attributes
+	 */
+	public function addItemToCart($userId, $attributes)
+	{
+		$cart = $this->makeCart($userId);
+
+		//	Add item to basket
+		$cartItem = new CartItem;
+		$cartItem->product_id = $attributes['id'];
+		$cartItem->count = $attributes['count'];
+		$cartItem->cart_id = $cart->id;
+		$cartItem->save();
+	}
+
 
 	/**
 	 * Get all orders
@@ -122,6 +169,11 @@ class CartLogic
 	{
 		Cart::destroy($id);
 	}
+	
+	public function cartItemDestroy($id)
+	{
+		CartItem::destroy($id);
+	}
 
 	/**
 	 * Get Cart id
@@ -161,6 +213,11 @@ class CartLogic
 		return Auth::user()->orders()->findOrFail($id);;
 	}
 
+	/**
+	 * Change status order
+	 * @param $id
+	 * @param $status
+	 */
 	public function changeStatusOrder($id, $status)
 	{
 		Order::findOrFail($id)

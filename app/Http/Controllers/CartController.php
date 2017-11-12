@@ -5,11 +5,20 @@ namespace App\Http\Controllers;
 
 use App\Cart;
 use App\CartItem;
+use App\Helper\CartLogic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
+	private $cartLogic;
+	private $userId;
+	
+	public function __construct(CartLogic $cartLogic)
+	{
+		$this->cartLogic = $cartLogic;
+		$this->userId = Auth::user()->id ?? null;
+	}
 
 	/**
 	 * Display a cart with all items
@@ -18,15 +27,8 @@ class CartController extends Controller
 	 */
 	public function index()
 	{
-		$cart = Cart::getCartUser(Auth::user()->id)->first();
-
-		$cartItems = $cart ? $cart->items : null;
-
-		$total = 0;
-		foreach ($cartItems as $item) {
-			$total += $item->count * $item->product->price;
-		}
-
+		$cartItems = $this->cartLogic->getCartItems($this->userId);
+		$total = $this->cartLogic->getTotalPriceFromCart($this->userId);
 
 		return view('orders.list')->with(['cartItems' => $cartItems, 'total' => $total]);
 	}
@@ -39,25 +41,7 @@ class CartController extends Controller
 	{
 		//TODO:: create request for validation product ID with count
 
-		$cart = Cart::getCartUser(Auth::user()->id)->first();
-
-
-		if (!$cart) {
-			$cart = new Cart;
-			$cart->user_id = Auth::user()->id;
-			$cart->token = sha1(microtime());
-			$cart->save();
-		}
-
-
-
-		//	Add item to basket
-		$cartItem = new CartItem;
-		$cartItem->product_id = $request->id;
-		$cartItem->count = $request->count;
-		$cartItem->cart_id = $cart->id;
-		$cartItem->save();
-
+		$this->cartLogic->addItemToCart($this->userId, $request->all());
 
 		return redirect()->route('shopping.index')->with('status', 'Item added to shopping list.');
 	}
@@ -75,12 +59,7 @@ class CartController extends Controller
 	{
 		//TODO:: Validate correct count of product
 
-		$item = Auth::user()->cart->items()->findOrFail($id);
-
-		if ($item) {
-			$item->count = $request->count;
-			$item->update();
-		}
+		$this->cartLogic->updateCountItem($id, $request->count);
 
 
 		return redirect()->route('shopping.index')->with('status', 'Product updated');
@@ -94,7 +73,7 @@ class CartController extends Controller
 	 */
 	public function destroy($id)
 	{
-		CartItem::destroy($id);
+		$this->cartLogic->cartItemDestroy($id);
 
 		return redirect()->route('shopping.index')->with('status', 'Product deleted');
 	}
