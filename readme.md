@@ -17,7 +17,9 @@
 - admin dashboard
 - managing users in admin
 - managing products in admin and dashboard
-
+- managing Cart, shopping list
+- managing order. Create order, manage order for admin and user
+- create Cart logic for better managing with shop
 
 
 
@@ -35,6 +37,9 @@
 - managing users
 - managing products with photos
 - dashboard with all products and detail info about product after click 'buy'
+- shopping list
+- orders
+- roles admin and basic
 
 
 ## About Laravel
