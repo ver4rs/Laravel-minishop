@@ -17,6 +17,7 @@
             <div class="col-sm-6">
                 <h1>{{ $product->name }}</h1>
                 <p>{{ $product->description }}</p>
+                <p><strong>Price: </strong> {{ $product->price }}</p>
                 <p><strong>Count:</strong>&nbsp; {{ $product->count }}</p>
 
                 {!! Form::open(['method' => 'POST', 'route' => array('shopping.store'), 'class' => 'form']) !!}

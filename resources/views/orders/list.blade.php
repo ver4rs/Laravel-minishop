@@ -69,7 +69,7 @@
                         </tbody>
                     </table>
                     <div class="col-sm-offset-8">
-                        <h4><a href="">Make order</a></h4>
+                        <h4><a href="{{ route('order.checkout') }}">Make order</a></h4>
                     </div>
                 </div>
             </div>

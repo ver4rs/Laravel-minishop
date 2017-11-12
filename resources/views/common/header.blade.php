@@ -40,6 +40,7 @@
                                     <a href="{{ route('user.index') }}">Users</a>
                                     <a href="{{ route('product.index') }}">Products</a>
                                 @endcan
+                                    <a href="{{ route('order.index') }}">Orders</a>
                                 <a href="{{ route('logout') }}"
                                    onclick="event.preventDefault();
                                                  document.getElementById('logout-form').submit();">
