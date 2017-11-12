@@ -75,9 +75,7 @@ class CartController extends Controller
 	{
 		//TODO:: Validate correct count of product
 
-//		$item = CartItem::findOrFail($id);
 		$item = Auth::user()->cart->items()->findOrFail($id);
-//		dd($item);
 
 		if ($item) {
 			$item->count = $request->count;

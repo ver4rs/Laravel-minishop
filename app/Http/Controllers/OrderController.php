@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Cart;
 use App\CartItem;
+use App\Helper\CartLogic;
 use App\Http\Requests\OrderRequest;
 use App\Order;
 use App\OrderItem;
@@ -13,6 +14,15 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
+    public $cartLogic;
+    private $userId;
+
+    public function __construct(CartLogic $cartLogic)
+    {
+        $this->cartLogic = $cartLogic;
+        $this->userId = Auth::user()->id ?? null;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -20,11 +30,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        if (Auth::user()->can('isAdmin', Auth::user())) {
-            $orders = Order::all();
-        } else {
-            $orders = Auth::user()->orders;
-        }
+        $orders = $this->cartLogic->getOrders(Auth::user()->can('isAdmin', Auth::user()) ? true : false);
 
         return view('orders.index')->with(['orders' => $orders]);
     }
@@ -35,14 +41,8 @@ class OrderController extends Controller
      */
     public function checkout()
     {
-        $cart = Cart::getCartUser(Auth::user()->id)->first();
-
-        $cartItems = $cart ? $cart->items : null;
-
-        $total = 0;
-        foreach ($cartItems as $item) {
-            $total += $item->count * $item->product->price;
-        }
+        $cartItems = $this->cartLogic->getCartItems($this->userId);
+        $total = $this->cartLogic->getTotalPriceFromCart($this->userId);
 
         return view('orders.checkout')->with(['cartItems' => $cartItems, 'total' => $total]);
     }
@@ -54,43 +54,7 @@ class OrderController extends Controller
      */
     public function createOrder(OrderRequest $request)
     {
-        $cart = Cart::getCartUser(Auth::user()->id)->first();
-
-        if (!$cart) {
-            return redirect()->route('shopping.list');
-        }
-
-        $cartItems = $cart ? $cart->items : null;
-
-        $total = 0;
-        foreach ($cartItems as $item) {
-            $total += $item->count * $item->product->price;
-        }
-
-
-        $order = new Order;
-        $order->user_id = Auth::user()->id;
-        $order->name = $request->name;
-        $order->city = $request->city;
-        $order->address = $request->address;
-        $order->price = $total;
-        $order->save();
-
-        foreach ($cartItems as $item) {
-            $orderItem = new OrderItem;
-            $orderItem->order_id = $order->id;
-            $orderItem->product_id = $item->product->id;
-            $orderItem->count = $item->count;
-            $orderItem->save();
-
-            // update product
-            Product::updateCount($item->product->id, $item->product->count, $item->count);
-
-            CartItem::destroy($item->id);
-        }
-
-        Cart::destroy($cart->id);
-
+        $this->cartLogic->migrationOrder($this->userId, $request->all());
 
         return redirect()->route('home.index');
     }
@@ -105,8 +69,7 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-        $order = Auth::user()->orders()->findOrFail($id);
-
+        $order = $this->cartLogic->getOrder($id);
 
         return view('orders.show')->with(['order' => $order]);
     }
@@ -117,8 +80,7 @@ class OrderController extends Controller
             return redirect()->route('order.index');
         }
 
-        Order::findOrFail($request->id)
-            ->update(['status' => $request->status]);
+        $this->cartLogic->changeStatusOrder($request->id, $request->status);
 
         return redirect()->route('order.index')->with('status', 'Status changed');
     }
