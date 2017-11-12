@@ -37,4 +37,15 @@ class Cart extends Model
 		return $this->belongsTo(User::class, 'id');
 	}
 
+	/**
+	 * Get cart user
+	 * @param $query
+	 * @param $id
+	 * @return mixed
+	 */
+	public function scopeGetCartUser($query, $id)
+	{
+		return $query->where('user_id', $id);
+	}
+
 }

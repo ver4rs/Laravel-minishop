@@ -18,13 +18,9 @@ class CartController extends Controller
 	 */
 	public function index()
 	{
-
-		$cart = Cart::where('user_id', Auth::user()->id)
-			->with('items')
-			->first();
+		$cart = Cart::getCartUser(Auth::user()->id)->first();
 
 		$cartItems = $cart ? $cart->items : null;
-
 
 		$total = 0;
 		foreach ($cartItems as $item) {
@@ -41,7 +37,10 @@ class CartController extends Controller
 	 */
 	public function store(Request $request)
 	{
-		$cart = Cart::where('user_id', Auth::user()->id)->first();
+		//TODO:: create request for validation product ID with count
+
+		$cart = Cart::getCartUser(Auth::user()->id)->first();
+
 
 		if (!$cart) {
 			$cart = new Cart;
@@ -50,7 +49,6 @@ class CartController extends Controller
 			$cart->save();
 		}
 
-		//TODO:: create request for validation product ID with count
 
 
 		//	Add item to basket
@@ -77,7 +75,9 @@ class CartController extends Controller
 	{
 		//TODO:: Validate correct count of product
 
-		$item = CartItem::findOrFail($id);
+//		$item = CartItem::findOrFail($id);
+		$item = Auth::user()->cart->items()->findOrFail($id);
+//		dd($item);
 
 		if ($item) {
 			$item->count = $request->count;
