@@ -40,6 +40,7 @@
 - shopping list
 - orders
 - roles admin and basic
+- user must be logged in for create order
 
 
 ## About Laravel
