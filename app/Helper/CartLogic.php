@@ -27,6 +27,10 @@ class CartLogic
 	 */
 	public function getCartByUser($userId)
 	{
+		if (!$userId) {
+			return null;
+		}
+
 		$cart = Cart::getCartUser($userId)->first();
 		return $cart;
 	}
@@ -40,7 +44,7 @@ class CartLogic
 	{
 		$cart = $this->getCartByUser($userId);
 
-		return $cart->items ?? null;
+		return $cart->items ?? [];
 	}
 
 	/**
@@ -51,6 +55,10 @@ class CartLogic
 	public function getTotalPriceFromCart($userId)
 	{
 		$cartItems = $this->getCartItems($userId);
+
+		if (!$cartItems) {
+			return null;
+		}
 		
 		$total = 0;
 		foreach ($cartItems as $item) {
@@ -66,6 +74,10 @@ class CartLogic
 	 */
 	private function makeCart($userId)
 	{
+		if ($cart = $this->getCartByUser($userId)) {
+			return $cart;
+		}
+
 		$cart = new Cart;
 		$cart->user_id = $userId;
 		$cart->token = sha1(microtime());
@@ -182,7 +194,7 @@ class CartLogic
 	 */
 	private function getCartId($userId)
 	{
-		return Auth::user()->cart->id;
+		return Auth::user()->cart->id ?? null;
 	}
 
 	/**

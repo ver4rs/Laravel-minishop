@@ -29,7 +29,7 @@
                             @foreach($products as $item)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $item->image1 }}</td>
+                                    <td><img src="{{ url(env('PRODUCT_IMAGE'), $item->image1) }}" alt="{{ $item->name }}" class="img-rounded" style="height: 100px;"></td>
                                     <td>{{ $item->name }}</td>
                                     <td>{{ $item->price }}</td>
                                     <td>{{ $item->count }}</td>

@@ -30,8 +30,8 @@
                             @foreach($orders as $order)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $order->user->name . ', ' . $order->name }}</td>
-                                    <td>{{ $order->user->email }}</td>
+                                    <td>{{ $order->user->name or $order->name }}</td>
+                                    <td>{{ $order->user->email or null }}</td>
                                     <td>{{ $order->city }}</td>
                                     <td>{{ $order->address }}</td>
                                     <td>{{ $order->status }}</td>
@@ -40,8 +40,8 @@
                                         <a href="{{ route('order.show', $order->id) }}">Show</a>
 
                                         @can('isAdmin', App\User::class)
-                                            {!! Form::open(['method' => 'post', 'route' => array('order.changeStatus'), 'id' => 'form', 'onChange' => 'document.getElementById("form").submit();']) !!}
-                                            {!! Form::select('status', ['created' => 'created', 'shipped' => 'shipped'] ,$order->status, ['id' => 'selectStatus']) !!}
+                                            {!! Form::open(['method' => 'post', 'route' => array('order.changeStatus'), 'id' => 'form' . $loop->iteration, 'onChange' => 'document.getElementById("form'. $loop->iteration .'").submit();']) !!}
+                                            {!! Form::select('status', ['created' => 'created', 'shipped' => 'shipped'] , $order->status, ['id' => 'selectStatus']) !!}
                                             {!! Form::hidden('id', $order->id) !!}
                                             {!! Form::close() !!}
                                         @endcan

@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
-use App\Cart;
-use App\CartItem;
 use App\Helper\CartLogic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,12 +9,10 @@ use Illuminate\Support\Facades\Auth;
 class CartController extends Controller
 {
 	private $cartLogic;
-	private $userId;
 	
 	public function __construct(CartLogic $cartLogic)
 	{
 		$this->cartLogic = $cartLogic;
-		$this->userId = Auth::user()->id ?? null;
 	}
 
 	/**
@@ -27,8 +22,9 @@ class CartController extends Controller
 	 */
 	public function index()
 	{
-		$cartItems = $this->cartLogic->getCartItems($this->userId);
-		$total = $this->cartLogic->getTotalPriceFromCart($this->userId);
+		$userId = Auth::user()->id;
+		$cartItems = $this->cartLogic->getCartItems($userId);
+		$total = $this->cartLogic->getTotalPriceFromCart($userId);
 
 		return view('orders.list')->with(['cartItems' => $cartItems, 'total' => $total]);
 	}
@@ -41,7 +37,7 @@ class CartController extends Controller
 	{
 		//TODO:: create request for validation product ID with count
 
-		$this->cartLogic->addItemToCart($this->userId, $request->all());
+		$this->cartLogic->addItemToCart(Auth::user()->id, $request->all());
 
 		return redirect()->route('shopping.index')->with('status', 'Item added to shopping list.');
 	}

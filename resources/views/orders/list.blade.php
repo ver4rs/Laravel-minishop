@@ -58,6 +58,8 @@
                                 <th>Shopping list is empty</th>
                             </tr>
                         @endforelse
+
+                        @if($cartItems)
                             <tr>
                                 <td></td>
                                 <td></td>
@@ -65,12 +67,15 @@
                                 <td><strong>{{ $total . 'E' }}</strong></td>
                                 <td></td>
                             </tr>
+                        @endif
 
                         </tbody>
                     </table>
-                    <div class="col-sm-offset-8">
-                        <h4><a href="{{ route('order.checkout') }}">Make order</a></h4>
-                    </div>
+                    @if($cartItems)
+                        <div class="col-sm-offset-8">
+                            <h4><a href="{{ route('order.checkout') }}">Make order</a></h4>
+                        </div>
+                    @endif
                 </div>
             </div>
 

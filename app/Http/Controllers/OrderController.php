@@ -2,25 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Cart;
-use App\CartItem;
 use App\Helper\CartLogic;
 use App\Http\Requests\OrderRequest;
-use App\Order;
-use App\OrderItem;
-use App\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
     private $cartLogic;
-    private $userId;
 
     public function __construct(CartLogic $cartLogic)
     {
         $this->cartLogic = $cartLogic;
-        $this->userId = Auth::user()->id ?? null;
     }
 
     /**
@@ -41,8 +34,9 @@ class OrderController extends Controller
      */
     public function checkout()
     {
-        $cartItems = $this->cartLogic->getCartItems($this->userId);
-        $total = $this->cartLogic->getTotalPriceFromCart($this->userId);
+        $userId = Auth::user()->id;
+        $cartItems = $this->cartLogic->getCartItems($userId);
+        $total = $this->cartLogic->getTotalPriceFromCart($userId);
 
         return view('orders.checkout')->with(['cartItems' => $cartItems, 'total' => $total]);
     }
@@ -54,7 +48,7 @@ class OrderController extends Controller
      */
     public function createOrder(OrderRequest $request)
     {
-        $this->cartLogic->migrationOrder($this->userId, $request->all());
+        $this->cartLogic->migrationOrder(Auth::user()->id, $request->all());
 
         return redirect()->route('home.index');
     }
@@ -74,6 +68,11 @@ class OrderController extends Controller
         return view('orders.show')->with(['order' => $order]);
     }
 
+    /**
+     * Change status order
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function changeStatus(Request $request)
     {
         if (!Auth::user()->can('isAdmin', Auth::user())) {
