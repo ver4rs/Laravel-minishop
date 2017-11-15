@@ -44,7 +44,7 @@
 
 ## Images
 
-[home](screenshot/home.png)
+![home](screenshot/home.png)
 
 
 ## About Laravel
