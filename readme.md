@@ -43,8 +43,33 @@
 - user must be logged in for create order
 
 ## Images
-
+- Home | Dashboard
 ![home](screenshot/home.png)
+
+- Product show
+![Product show](screenshot/show-product.png)
+
+- Shopping list
+![Shopping list](screenshot/shopping-list.png)
+
+- Create order
+![Create order](screenshot/create-order.png)
+
+- Admin managing users
+![Admin managing users](screenshot/admin-users.png)
+
+- Admin managing products
+![Admin managing product list](screenshot/admin-products.png)
+
+- Admin manage product edit
+![Admin product edit](screenshot/admin-product-edit.png)
+
+- Admin managing orders
+![Admin managing orders](screenshot/admin-morders.png)
+
+- Admin manage order info
+![Admin manage order info](screenshot/admin-order-info.png)
+
 
 
 ## About Laravel
