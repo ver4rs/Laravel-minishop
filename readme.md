@@ -42,6 +42,10 @@
 - roles admin and basic
 - user must be logged in for create order
 
+## Images
+
+[home](screenshot/home.png)
+
 
 ## About Laravel
 
