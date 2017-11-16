@@ -16,7 +16,7 @@ Auth::routes();
 
 Route::get('/', 'HomeController@index')->name('home.index');
 
-Route::get('product/{id}', 'ProductController@show')->name('product.show');
+Route::get('product/{id}', 'ProductController@show')->name('product.show')->where('id', '[0-9]+');
 
 
 Route::middleware(['auth'])->group(function () {
@@ -25,6 +25,7 @@ Route::middleware(['auth'])->group(function () {
 	Route::patch('shopping/{id}/update', 'CartController@update')->name('shopping.update'); // update item in shopping basket
 	Route::delete('shopping/{id}/delete', 'CartController@destroy')->name('shopping.destroy'); // delete item in shopping basket
 
+	Route::get('product/{id}/image/{image}', 'ProductController@destroyImage')->name('product.destroyImage');
 	Route::resource('product', 'ProductController');
 
 	Route::get('checkout', 'OrderController@checkout')->name('order.checkout');

@@ -54,6 +54,7 @@
                                     {!! Form::file('image1', ['class' => 'form-control ', $readonly]) !!}
                                     @if($product && $product->image1)
                                         <img src="{{ url(env('PRODUCT_IMAGE'), $product->image1) }}" alt="" style="height: 70px">
+                                        {{ link_to(route('product.destroyImage', ['id' => $product->id, 'key' => 'image1']), 'X') }}
                                     @endif
                                 </div>
                             </div>

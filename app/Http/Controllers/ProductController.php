@@ -123,6 +123,22 @@ class ProductController extends Controller
     }
 
     /**
+     * Destroy image from product
+     * @param $productId
+     * @param $image
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroyImage($productId, $image)
+    {
+        Product::findOrFail($productId)
+            ->update([$image => null]);
+
+        $this->storageHelper->deleteImage($image);
+
+        return redirect()->route('product.edit', $productId)->with('status', 'Image deleted');
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
