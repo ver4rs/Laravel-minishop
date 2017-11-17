@@ -50,7 +50,7 @@ class OrderController extends Controller
     {
         $this->cartLogic->migrationOrder(Auth::user()->id, $request->all());
 
-        return redirect()->route('home.index');
+        return redirect()->route('home.index')->with('status', 'Order created');
     }
 
 

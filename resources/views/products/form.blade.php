@@ -65,6 +65,7 @@
                                     {!! Form::file('image2', ['class' => 'form-control ', $readonly]) !!}
                                     @if($product && $product->image2)
                                         <img src="{{ url(env('PRODUCT_IMAGE'), $product->image2) }}" alt="" style="height: 70px">
+                                        {{ link_to(route('product.destroyImage', ['id' => $product->id, 'key' => 'image2']), 'X') }}
                                     @endif
                                 </div>
                             </div>
@@ -75,6 +76,7 @@
                                     {!! Form::file('image3', ['class' => 'form-control ', $readonly]) !!}
                                     @if($product && $product->image3)
                                         <img src="{{ url(env('PRODUCT_IMAGE'), $product->image3) }}" alt="" style="height: 70px">
+                                        {{ link_to(route('product.destroyImage', ['id' => $product->id, 'key' => 'image3']), 'X') }}
                                     @endif
                                 </div>
                             </div>
