@@ -65,7 +65,7 @@
 ![Admin product edit](screenshot/admin-product-edit.png)
 
 - Admin managing orders
-![Admin managing orders](screenshot/admin-morders.png)
+![Admin managing orders](screenshot/admin-orders.png)
 
 - Admin manage order info
 ![Admin manage order info](screenshot/admin-order-info.png)
