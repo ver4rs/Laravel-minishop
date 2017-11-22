@@ -101,7 +101,6 @@ class CartLogic
 	 */
 	public function hasItemCart($userId, $id)
 	{
-//		dd(CartItem::where(['id' => $id])->first());
 		$cartItems = CartItem::where('id', $id)
 			->whereHas('cart', function ($query) use($userId) {
 				$query->where('user_id', $userId);

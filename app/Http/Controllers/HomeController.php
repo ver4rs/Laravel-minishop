@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Product;
+use App\Repositories\Products\ProductRepository;
 
 class HomeController extends Controller
 {
+    private $productRepository;
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(ProductRepository $productRepository)
     {
 //        $this->middleware('auth');
+        $this->productRepository = $productRepository;
     }
 
     /**
@@ -23,7 +25,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $products = Product::where('count', '>', 0)->get();
+        $products = $this->productRepository->inStock();
 
         return view('home')->with('products', $products);
     }
