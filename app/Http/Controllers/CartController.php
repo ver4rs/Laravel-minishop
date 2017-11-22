@@ -8,10 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-	public function __construct()
-	{
-	}
-
 	/**
 	 * Display a cart with all items
 	 *

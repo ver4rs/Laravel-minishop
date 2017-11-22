@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\Auth;
 
 class CartLogic
 {
-	public function test(){
-		return 'yes';
-	}
 	/**
 	 * Get cart by user
 	 * @param $userId
