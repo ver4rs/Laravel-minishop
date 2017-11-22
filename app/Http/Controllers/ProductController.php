@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Helper\StorageHelper;
 use App\Http\Requests\ProductRequest;
 use App\Product;
-use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -38,8 +37,6 @@ class ProductController extends Controller
      */
     public function create()
     {
-
-
         return view('products.form')->with('product', null);
     }
 
@@ -61,7 +58,6 @@ class ProductController extends Controller
         foreach ($request->allFiles() as $key => $file) {
             $data[$key] = $this->storageHelper->saveImage($file);
         }
-
 
         $product = new Product($data);
         $product->save();

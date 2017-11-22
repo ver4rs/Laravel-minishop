@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateUserRequest;
 use App\User;
-use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -13,7 +12,6 @@ class UserController extends Controller
         //  Authorize for all class
 //        $this->authorize('isAdmin', Auth::user());
     }
-
 
     /**
      * Display a listing of the resource.
@@ -27,8 +25,6 @@ class UserController extends Controller
 
         return view('users.index')->with('users', $users);
     }
-
-
 
     /**
      * Show the form for editing the specified resource.

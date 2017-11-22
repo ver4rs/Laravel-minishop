@@ -19,6 +19,15 @@ class CartItem extends Model
 	];
 
 	/**
+	 * get total price
+	 * @return mixed
+	 */
+	public function getGetTotalAttribute()
+	{
+		return $this->count * $this->product->price;
+	}
+
+	/**
 	 * Relationship with Cart
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */

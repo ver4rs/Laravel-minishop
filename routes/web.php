@@ -18,7 +18,6 @@ Route::get('/', 'HomeController@index')->name('home.index');
 
 Route::get('product/{id}', 'ProductController@show')->name('product.show')->where('id', '[0-9]+');
 
-
 Route::middleware(['auth'])->group(function () {
 	Route::get('shopping', 'CartController@index')->name('shopping.index'); // show shopping list
 	Route::post('shopping', 'CartController@store')->name('shopping.store'); // save item to shopping basket
@@ -33,9 +32,7 @@ Route::middleware(['auth'])->group(function () {
 	Route::get('order', 'OrderController@index')->name('order.index');
 	Route::get('order/show/{id}', 'OrderController@show')->name('order.show');
 	Route::post('order/changeStatus', 'OrderController@changeStatus')->name('order.changeStatus')->middleware('can:isAdmin,App\User');
-
 });
-
 
 Route::prefix('admin')->middleware(['auth'])->group(function () {
 
@@ -44,5 +41,4 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 	Route::delete('users/{id}', 'UserController@destroy')->name('user.destroy')->middleware('can:isAdmin,App\User');;
 	Route::get('users/{id}/edit', 'UserController@edit')->name('user.edit')->middleware('can:isAdmin,App\User');;
 	Route::patch('users/{id}/edit', 'UserController@update')->name('user.update')->middleware('can:isAdmin,App\User');;
-
 });

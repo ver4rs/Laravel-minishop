@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Storage;
  */
 class StorageHelper
 {
-
 	/**
 	 * Delete image from storage
 	 * @param string $name

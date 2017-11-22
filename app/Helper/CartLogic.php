@@ -11,15 +11,6 @@ use Illuminate\Support\Facades\Auth;
 
 class CartLogic
 {
-
-
-
-	public function test()
-	{
-		return true;
-	}
-
-
 	/**
 	 * Get cart by user
 	 * @param $userId
