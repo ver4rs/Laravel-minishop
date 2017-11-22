@@ -178,6 +178,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        \App\Helper\Cart\CartLogicServiceProvider::class,
+
     ],
 
     /*
@@ -230,6 +232,7 @@ return [
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
 
+        'CartLogic' => \App\Helper\Cart\Fasades\CartLogic::class,
     ],
 
 ];

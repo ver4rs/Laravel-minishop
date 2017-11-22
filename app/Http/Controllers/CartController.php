@@ -2,17 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Helper\CartLogic;
+use App\Helper\Cart\Fasades\CartLogic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-	private $cartLogic;
-	
-	public function __construct(CartLogic $cartLogic)
+	public function __construct()
 	{
-		$this->cartLogic = $cartLogic;
 	}
 
 	/**
@@ -23,8 +20,8 @@ class CartController extends Controller
 	public function index()
 	{
 		$userId = Auth::user()->id;
-		$cartItems = $this->cartLogic->getCartItems($userId);
-		$total = $this->cartLogic->getTotalPriceFromCart($userId);
+		$cartItems = CartLogic::getCartItems($userId);
+		$total = CartLogic::getTotalPriceFromCart($userId);
 
 		return view('orders.list')->with(['cartItems' => $cartItems, 'total' => $total]);
 	}
@@ -37,7 +34,7 @@ class CartController extends Controller
 	{
 		//TODO:: create request for validation product ID with count
 
-		$this->cartLogic->addItemToCart(Auth::user()->id, $request->all());
+		CartLogic::addItemToCart(Auth::user()->id, $request->all());
 
 		return redirect()->route('shopping.index')->with('status', 'Item added to shopping list.');
 	}
@@ -55,8 +52,7 @@ class CartController extends Controller
 	{
 		//TODO:: Validate correct count of product
 
-		$this->cartLogic->updateCountItem($id, $request->count);
-
+		CartLogic::updateCountItem($id, $request->count);
 
 		return redirect()->route('shopping.index')->with('status', 'Product updated');
 	}
@@ -69,7 +65,7 @@ class CartController extends Controller
 	 */
 	public function destroy($id)
 	{
-		$this->cartLogic->cartItemDestroy($id);
+		CartLogic::cartItemDestroy($id);
 
 		return redirect()->route('shopping.index')->with('status', 'Product deleted');
 	}

@@ -2,18 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Helper\CartLogic;
+use App\Helper\Cart\Fasades\CartLogic;
 use App\Http\Requests\OrderRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
-    private $cartLogic;
-
-    public function __construct(CartLogic $cartLogic)
+    public function __construct()
     {
-        $this->cartLogic = $cartLogic;
     }
 
     /**
@@ -23,7 +20,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = $this->cartLogic->getOrders(Auth::user()->can('isAdmin', Auth::user()) ? true : false);
+        $orders = CartLogic::getOrders(Auth::user()->can('isAdmin', Auth::user()) ? true : false);
 
         return view('orders.index')->with(['orders' => $orders]);
     }
@@ -35,8 +32,8 @@ class OrderController extends Controller
     public function checkout()
     {
         $userId = Auth::user()->id;
-        $cartItems = $this->cartLogic->getCartItems($userId);
-        $total = $this->cartLogic->getTotalPriceFromCart($userId);
+        $cartItems = CartLogic::getCartItems($userId);
+        $total = CartLogic::getTotalPriceFromCart($userId);
 
         return view('orders.checkout')->with(['cartItems' => $cartItems, 'total' => $total]);
     }
@@ -48,7 +45,7 @@ class OrderController extends Controller
      */
     public function createOrder(OrderRequest $request)
     {
-        $this->cartLogic->migrationOrder(Auth::user()->id, $request->all());
+        CartLogic::migrationOrder(Auth::user()->id, $request->all());
 
         return redirect()->route('home.index')->with('status', 'Order created');
     }
@@ -63,7 +60,7 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-        $order = $this->cartLogic->getOrder($id);
+        $order = CartLogic::getOrder($id);
 
         return view('orders.show')->with(['order' => $order]);
     }
@@ -79,7 +76,7 @@ class OrderController extends Controller
             return redirect()->route('order.index');
         }
 
-        $this->cartLogic->changeStatusOrder($request->id, $request->status);
+        CartLogic::changeStatusOrder($request->id, $request->status);
 
         return redirect()->route('order.index')->with('status', 'Status changed');
     }

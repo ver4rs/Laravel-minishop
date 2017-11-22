@@ -1,6 +1,5 @@
 <?php
-namespace App\Helper;
-
+namespace App\Helper\Cart;
 
 use App\Cart;
 use App\CartItem;
@@ -11,6 +10,9 @@ use Illuminate\Support\Facades\Auth;
 
 class CartLogic
 {
+	public function test(){
+		return 'yes';
+	}
 	/**
 	 * Get cart by user
 	 * @param $userId
@@ -90,6 +92,22 @@ class CartLogic
 			$item->count = $count;
 			$item->update();
 		}
+		return $item;
+	}
+
+	/**
+	 * Has item id into Shopping cart
+	 * @param $id
+	 */
+	public function hasItemCart($userId, $id)
+	{
+//		dd(CartItem::where(['id' => $id])->first());
+		$cartItems = CartItem::where('id', $id)
+			->whereHas('cart', function ($query) use($userId) {
+				$query->where('user_id', $userId);
+			})
+			->first();
+		return $cartItems ? true : false;
 	}
 
 	/**
@@ -101,12 +119,16 @@ class CartLogic
 	{
 		$cart = $this->makeCart($userId);
 
-		//	Add item to basket
-		$cartItem = new CartItem;
-		$cartItem->product_id = $attributes['id'];
-		$cartItem->count = $attributes['count'];
-		$cartItem->cart_id = $cart->id;
-		$cartItem->save();
+		if (!$this->hasItemCart($userId, $attributes['id'])) {
+			//	Add item to Shopping cart
+			$cartItem = new CartItem;
+			$cartItem->product_id = $attributes['id'];
+			$cartItem->count = $attributes['count'];
+			$cartItem->cart_id = $cart->id;
+			$cartItem->save();
+		} else {
+			$this->updateCountItem($attributes['id'], $attributes['count']);
+		}
 	}
 
 
