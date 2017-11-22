@@ -3,14 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateUserRequest;
-use App\User;
+use App\Repositories\Users\UserRepository;
 
 class UserController extends Controller
 {
-    public function __construct()
+    private $userRepository;
+
+    public function __construct(UserRepository $userRepository)
     {
         //  Authorize for all class
 //        $this->authorize('isAdmin', Auth::user());
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -20,8 +23,7 @@ class UserController extends Controller
      */
     public function index()
     {
-
-        $users = User::all();
+        $users = $this->userRepository->getAll();
 
         return view('users.index')->with('users', $users);
     }
@@ -37,7 +39,7 @@ class UserController extends Controller
         // authorize for this function
         //$this->authorize('isAdmin', Auth::user());
 
-        $user = User::findOrFail($id);
+        $user = $this->userRepository->getById($id);
 
         return view('users.edit')->with('user', $user);
     }
@@ -54,9 +56,7 @@ class UserController extends Controller
         // authorize for this function
         //$this->authorize('isAdmin', Auth::user());
 
-        User::findOrFail($id)
-            ->update($request->all());
-
+        $this->userRepository->updateById($id, $request->all());
 
         return redirect()->route('user.index')->with('status', 'User profile changed');
     }
@@ -69,8 +69,7 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        User::findOrFail($id)
-            ->delete();
+        $this->userRepository->delete($id);
 
         return redirect()->route('user.index')->with('status', 'Users profile deleted');
     }

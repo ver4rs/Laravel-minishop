@@ -2,22 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Helper\StorageHelper;
+use App\Helper\StorageImages\StorageImages;
 use App\Http\Requests\ProductRequest;
 use App\Product;
 
 class ProductController extends Controller
 {
-    /**
-     * @var StorageHelper
-     */
-    protected $storageHelper;
-
-    public function __construct(StorageHelper $storageHelper)
-    {
-        $this->storageHelper = $storageHelper;
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -56,7 +46,7 @@ class ProductController extends Controller
 
         //  Save images
         foreach ($request->allFiles() as $key => $file) {
-            $data[$key] = $this->storageHelper->saveImage($file);
+            $data[$key] = StorageImages::saveImage($file);
         }
 
         $product = new Product($data);
@@ -106,10 +96,10 @@ class ProductController extends Controller
         foreach ($request->allFiles() as $key => $file) {
 
             if ($product->$key) {
-                $this->storageHelper->deleteImage($product->$key);
+                StorageImages::deleteImage($product->$key);
             }
 
-            $data[$key] = $this->storageHelper->saveImage($file);
+            $data[$key] = StorageImages::saveImage($file);
         }
 
         $product->update($data);
@@ -129,7 +119,7 @@ class ProductController extends Controller
         Product::findOrFail($productId)
             ->update([$image => null]);
 
-        $this->storageHelper->deleteImage($image);
+        StorageImages::deleteImage($image);
 
         return redirect()->route('product.edit', $productId)->with('status', 'Image deleted');
     }
@@ -146,13 +136,13 @@ class ProductController extends Controller
 
         //  Delete image
         if (!is_null($product->image1)) {
-            $this->storageHelper->deleteImage($product->image1, 'products');
+            StorageImages::deleteImage($product->image1, 'products');
         }
         if (!is_null($product->image2)) {
-            $this->storageHelper->deleteImage($product->image2, 'products');
+            StorageImages::deleteImage($product->image2, 'products');
         }
         if (!is_null($product->image3)) {
-            $this->storageHelper->deleteImage($product->image3, 'products');
+            StorageImages::deleteImage($product->image3, 'products');
         }
 
         $product->delete();
