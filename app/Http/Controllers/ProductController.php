@@ -4,10 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Helper\StorageImages\StorageImages;
 use App\Http\Requests\ProductRequest;
-use App\Product;
+use App\Repositories\Products\ProductRepository;
 
 class ProductController extends Controller
 {
+    private $productRepository;
+
+    /**
+     * ProductController constructor.
+     */
+    public function __construct(ProductRepository $productRepository)
+    {
+        $this->productRepository = $productRepository;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +25,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::all();
+        $products = $this->productRepository->getAll();
 
         return view('products.index')->with('products', $products);
     }
@@ -49,8 +59,7 @@ class ProductController extends Controller
             $data[$key] = StorageImages::saveImage($file);
         }
 
-        $product = new Product($data);
-        $product->save();
+        $this->productRepository->save($data);
 
         return redirect()->route('product.index')->with('status', 'Product added');
     }
@@ -63,7 +72,7 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        $product = Product::findOrFail($id);
+        $product = $this->productRepository->getById($id);
 
         return view('products.show')->with('product', $product);
     }
@@ -76,7 +85,7 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        $product = Product::findOrFail($id);
+        $product = $this->productRepository->getById($id);
 
         return view('products.form')->with('product', $product);
     }
@@ -91,7 +100,7 @@ class ProductController extends Controller
     public function update(ProductRequest $request, $id)
     {
         $data = $request->all();
-        $product = Product::findOrFail($id);
+        $product = $this->productRepository->getById($id);
 
         foreach ($request->allFiles() as $key => $file) {
 
@@ -102,7 +111,7 @@ class ProductController extends Controller
             $data[$key] = StorageImages::saveImage($file);
         }
 
-        $product->update($data);
+        $this->productRepository->update($id, $data);
 
 
         return redirect()->route('product.index')->with('status', 'Product updated');
@@ -116,8 +125,7 @@ class ProductController extends Controller
      */
     public function destroyImage($productId, $image)
     {
-        Product::findOrFail($productId)
-            ->update([$image => null]);
+        $this->productRepository->update($productId, [$image => null]);
 
         StorageImages::deleteImage($image);
 
@@ -132,7 +140,7 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        $product = Product::findOrFail($id);
+        $product = $this->productRepository->getById($id);
 
         //  Delete image
         if (!is_null($product->image1)) {
@@ -145,7 +153,7 @@ class ProductController extends Controller
             StorageImages::deleteImage($product->image3, 'products');
         }
 
-        $product->delete();
+        $this->productRepository->delete($id);
 
         return redirect()->route('product.index')->with('status', 'Product deleted');
     }
