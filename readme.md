@@ -29,7 +29,11 @@
 - php artisan key:generate
 - setting database connection
 - php artisan migrate
+- php artisan db:seed
 - run
+- Login as admin 
+    - **email** = admin@admin.sk
+    - **password** = admin
 
 
 ## Features 
