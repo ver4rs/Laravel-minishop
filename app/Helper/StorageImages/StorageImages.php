@@ -24,7 +24,7 @@ abstract class StorageImages
 	 */
 	public static function saveImage($file, $disk = 'images', $path = 'products')
 	{
-		$name = sha1(microtime()) . '.jpg';
+		$name = sha1(microtime()) . $file->extension();
 		Storage::disk($disk)->putFileAs($path, $file, $name);
 
 		return $name;
