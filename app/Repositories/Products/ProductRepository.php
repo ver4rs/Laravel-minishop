@@ -30,7 +30,7 @@ class ProductRepository implements ProductRepositoryInterface
 	 */
 	public function getAll()
 	{
-		return $this->model->all();
+		return $this->model->withTrashed()->get();
 	}
 
 	/**
@@ -74,5 +74,15 @@ class ProductRepository implements ProductRepositoryInterface
 	public function delete($id)
 	{
 		return $this->getById($id)->delete();
+	}
+
+	/**
+	 * Restore product
+	 * @param $id
+	 * @return mixed
+	 */
+	public function restoreProduct($id)
+	{
+		return $this->model->where('id', $id)->withTrashed()->restore();
 	}
 }

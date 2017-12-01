@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helper\StorageImages\StorageImages;
 use App\Http\Requests\ProductRequest;
 use App\Repositories\Products\ProductRepository;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -156,5 +157,12 @@ class ProductController extends Controller
         $this->productRepository->delete($id);
 
         return redirect()->route('product.index')->with('status', 'Product deleted');
+    }
+
+    public function restoreProduct(Request $request)
+    {
+        $this->productRepository->restoreProduct($request->id ?? null);
+
+        return redirect()->route('product.index')->with('status', 'Product restored');
     }
 }

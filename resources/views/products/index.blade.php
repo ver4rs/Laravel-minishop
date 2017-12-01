@@ -24,22 +24,30 @@
                         </thead>
                         <tbody>
                         @foreach($products as $item)
-                            <tr>
+                            <tr @if($item->deleted_at) class="bg-danger"  @endif>
                                 <td>{{ $loop->iteration }}</td>
                                 <td><img src="{{ url(env('PRODUCT_IMAGE'), $item->image1) }}" alt="{{ $item->name }}" class="img-rounded" style="height: 100px;"></td>
                                 <td>{{ $item->name }}</td>
                                 <td>{{ $item->price }}</td>
                                 <td>{{ $item->count }}</td>
                                 <td>
-                                    <a href="{{ route('product.edit', $item->id) }}">edit</a>
-                                    {{--<a href="javascript:void(0)" onclick="--}}
-                                    {{--document.getElementById('delete-form').submit();">delete</a>--}}
-
-                                    {!! Form::open(['route'=> array('product.destroy', $item->id), 'id' => 'delete-form', 'style' => '']) !!}
+                                    @if($item->deleted_at)
+                                        {!! Form::open(['method'=> 'POST', 'route'=> array('product.restoreProduct'), 'id' => 'delete-form', 'style' => '']) !!}
                                         {{ csrf_field() }}
-                                        {{ method_field('DELETE') }}
-                                        {!! Form::button('delete', ['type' => 'submit', 'class' => 'btn btn-small btn-danger', 'title' => 'delete']) !!}
-                                    {!! Form::close() !!}
+                                        {!! Form::hidden('id', $item->id) !!}
+                                        {!! Form::button('restore', ['type' => 'submit', 'class' => 'btn btn-small btn-warning', 'title' => 'restore']) !!}
+                                        {!! Form::close() !!}
+                                    @else
+                                        <a href="{{ route('product.edit', $item->id) }}">edit</a>
+                                        {{--<a href="javascript:void(0)" onclick="--}}
+                                        {{--document.getElementById('delete-form').submit();">delete</a>--}}
+
+                                        {!! Form::open(['route'=> array('product.destroy', $item->id), 'id' => 'delete-form', 'style' => '']) !!}
+                                            {{ csrf_field() }}
+                                            {{ method_field('DELETE') }}
+                                            {!! Form::button('delete', ['type' => 'submit', 'class' => 'btn btn-small btn-danger', 'title' => 'delete']) !!}
+                                        {!! Form::close() !!}
+                                    @endif
 
                                 </td>
                             </tr>

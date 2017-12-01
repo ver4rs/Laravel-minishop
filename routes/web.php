@@ -25,6 +25,7 @@ Route::middleware(['auth'])->group(function () {
 	Route::delete('shopping/{id}/delete', 'CartController@destroy')->name('shopping.destroy'); // delete item in shopping basket
 
 	Route::get('product/{id}/image/{image}', 'ProductController@destroyImage')->name('product.destroyImage');
+	Route::post('product/restore', 'ProductController@restoreProduct')->name('product.restoreProduct');
 	Route::resource('product', 'ProductController');
 
 	Route::get('checkout', 'OrderController@checkout')->name('order.checkout');
