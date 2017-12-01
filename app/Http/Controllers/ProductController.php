@@ -4,19 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Helper\StorageImages\StorageImages;
 use App\Http\Requests\ProductRequest;
-use App\Repositories\Products\ProductRepository;
+use App\Repositories\Products\ProductsRepository;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    private $productRepository;
+    private $productsRepository;
 
     /**
      * ProductController constructor.
      */
-    public function __construct(ProductRepository $productRepository)
+    public function __construct(ProductsRepository $productsRepository)
     {
-        $this->productRepository = $productRepository;
+        $this->productsRepository = $productsRepository;
     }
 
     /**
@@ -26,7 +26,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = $this->productRepository->getAll();
+        $products = $this->productsRepository->getAllWithTrashed();
 
         return view('products.index')->with('products', $products);
     }
@@ -60,7 +60,7 @@ class ProductController extends Controller
             $data[$key] = StorageImages::saveImage($file);
         }
 
-        $this->productRepository->save($data);
+        $this->productsRepository->save($data);
 
         return redirect()->route('product.index')->with('status', 'Product added');
     }
@@ -73,7 +73,7 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        $product = $this->productRepository->getById($id);
+        $product = $this->productsRepository->getById($id);
 
         return view('products.show')->with('product', $product);
     }
@@ -86,7 +86,7 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        $product = $this->productRepository->getById($id);
+        $product = $this->productsRepository->getById($id);
 
         return view('products.form')->with('product', $product);
     }
@@ -101,7 +101,7 @@ class ProductController extends Controller
     public function update(ProductRequest $request, $id)
     {
         $data = $request->all();
-        $product = $this->productRepository->getById($id);
+        $product = $this->productsRepository->getById($id);
 
         foreach ($request->allFiles() as $key => $file) {
 
@@ -112,8 +112,7 @@ class ProductController extends Controller
             $data[$key] = StorageImages::saveImage($file);
         }
 
-        $this->productRepository->update($id, $data);
-
+        $this->productsRepository->updateById($id, $data);
 
         return redirect()->route('product.index')->with('status', 'Product updated');
     }
@@ -126,7 +125,7 @@ class ProductController extends Controller
      */
     public function destroyImage($productId, $image)
     {
-        $this->productRepository->update($productId, [$image => null]);
+        $this->productsRepository->updateById($productId, [$image => null]);
 
         StorageImages::deleteImage($image);
 
@@ -141,7 +140,7 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        $product = $this->productRepository->getById($id);
+        $product = $this->productsRepository->getById($id);
 
         //  Delete image
         if (!is_null($product->image1)) {
@@ -154,14 +153,14 @@ class ProductController extends Controller
             StorageImages::deleteImage($product->image3, 'products');
         }
 
-        $this->productRepository->delete($id);
+        $this->productsRepository->delete($id);
 
         return redirect()->route('product.index')->with('status', 'Product deleted');
     }
 
     public function restoreProduct(Request $request)
     {
-        $this->productRepository->restoreProduct($request->id ?? null);
+        $this->productsRepository->restoreProduct($request->id ?? null);
 
         return redirect()->route('product.index')->with('status', 'Product restored');
     }

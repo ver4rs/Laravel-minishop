@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Repositories\Products\ProductRepository;
+use App\Repositories\Products\ProductsRepository;
 
 class HomeController extends Controller
 {
@@ -12,7 +12,7 @@ class HomeController extends Controller
      *
      * @return void
      */
-    public function __construct(ProductRepository $productRepository)
+    public function __construct(ProductsRepository $productRepository)
     {
 //        $this->middleware('auth');
         $this->productRepository = $productRepository;

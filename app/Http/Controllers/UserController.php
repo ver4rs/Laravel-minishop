@@ -3,17 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateUserRequest;
-use App\Repositories\Users\UserRepository;
+use App\Repositories\Users\UsersRepository;
 
 class UserController extends Controller
 {
-    private $userRepository;
+    private $usersRepository;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UsersRepository $usersRepository)
     {
         //  Authorize for all class
 //        $this->authorize('isAdmin', Auth::user());
-        $this->userRepository = $userRepository;
+        $this->usersRepository = $usersRepository;
     }
 
     /**
@@ -23,7 +23,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = $this->userRepository->getAll();
+        $users = $this->usersRepository->getAll();
 
         return view('users.index')->with('users', $users);
     }
@@ -39,7 +39,7 @@ class UserController extends Controller
         // authorize for this function
         //$this->authorize('isAdmin', Auth::user());
 
-        $user = $this->userRepository->getById($id);
+        $user = $this->usersRepository->getById($id);
 
         return view('users.edit')->with('user', $user);
     }
@@ -56,7 +56,7 @@ class UserController extends Controller
         // authorize for this function
         //$this->authorize('isAdmin', Auth::user());
 
-        $this->userRepository->updateById($id, $request->all());
+        $this->usersRepository->updateById($id, $request->all());
 
         return redirect()->route('user.index')->with('status', 'User profile changed');
     }
@@ -69,7 +69,7 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        $this->userRepository->delete($id);
+        $this->usersRepository->delete($id);
 
         return redirect()->route('user.index')->with('status', 'Users profile deleted');
     }

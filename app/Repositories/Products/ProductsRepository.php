@@ -2,17 +2,27 @@
 
 namespace App\Repositories\Products;
 
-use App\Product;
+use App\Repositories\Base\BaseRepository;
 
-class ProductRepository implements ProductRepositoryInterface
+class ProductsRepository extends BaseRepository
 {
-	private $model;
+	protected $modelClass = \App\Product::class;
+
 	/**
 	 * ProductRepository constructor.
 	 */
-	public function __construct(Product $model)
+	public function __construct()
 	{
-		$this->model = $model;
+		//
+	}
+
+	/**
+	 * Get all products with deleted products "trashed"
+	 * @return mixed
+	 */
+	public function getAllWithTrashed()
+	{
+		return $this->modelClass::withTrashed()->get();
 	}
 
 	/**
@@ -21,59 +31,7 @@ class ProductRepository implements ProductRepositoryInterface
 	 */
 	public function inStock()
 	{
-		return $this->model->where('count', '>', 0)->get();
-	}
-
-	/**
-	 * Get all products
-	 * @return mixed
-	 */
-	public function getAll()
-	{
-		return $this->model->withTrashed()->get();
-	}
-
-	/**
-	 * Save product
-	 * @param array $attributes
-	 * @return mixed
-	 */
-	public function save($attributes)
-	{
-		$product = new $this->model($attributes);
-		$product->save();
-		return $product;
-	}
-
-	/**
-	 * Get product by id
-	 * @param $id
-	 * @return mixed
-	 */
-	public function getById($id)
-	{
-		return $this->model->findOrFail($id);
-	}
-
-	/**
-	 * Update instance by id with attributes
-	 * @param $id
-	 * @param $attributes
-	 * @return mixed
-	 */
-	public function update($id, $attributes)
-	{
-		return $this->getById($id)->update($attributes);
-	}
-
-	/**
-	 * Delete instance product by param id
-	 * @param $id
-	 * @return mixed
-	 */
-	public function delete($id)
-	{
-		return $this->getById($id)->delete();
+		return $this->modelClass::where('count', '>', 0)->get();
 	}
 
 	/**
@@ -83,6 +41,6 @@ class ProductRepository implements ProductRepositoryInterface
 	 */
 	public function restoreProduct($id)
 	{
-		return $this->model->where('id', $id)->withTrashed()->restore();
+		return $this->modelClass::where('id', $id)->withTrashed()->restore();
 	}
 }
