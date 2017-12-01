@@ -23,13 +23,18 @@
                         </thead>
                         <tbody>
                         @forelse($order->items as $item)
+                            @if($item->product)
                             <tr>
                                 <td><img src="{{ url(env('PRODUCT_IMAGE'), $item->product->image1) }}" style="width: 100px;" alt=""></td>
                                 <td><a href="{{ route('product.show', $item->product->id) }}">{{ $item->product->name }}</a></td>
                                 <td>{{ $item->count }}</td>
                                 <td>{{ $item->count * $item->product->price }}</td>
-
                             </tr>
+                            @else
+                                <tr>
+                                    <td>Deleted products</td>
+                                </tr>
+                            @endif
                         @empty
                             <tr>
                                 <th>Shopping list is empty</th>

@@ -26,6 +26,20 @@ class CartLogic
 	}
 
 	/**
+	 * Verification correct items inside basket
+	 * @param $items
+	 */
+	private function verificationItems(&$items)
+	{
+		foreach ($items as $key => $item) {
+			if (!$item->product) {
+				$this->cartItemDestroy($item->id);
+				$items->forget($key);
+			}
+		}
+	}
+
+	/**
 	 * Get cart items by user
 	 * @param $userId
 	 * @return null
@@ -34,7 +48,11 @@ class CartLogic
 	{
 		$cart = $this->getCartByUser($userId);
 
-		return $cart->items ?? [];
+		$items = $cart->items;
+
+		$this->verificationItems($items);
+
+		return $items ?? null;
 	}
 
 	/**
@@ -231,7 +249,7 @@ class CartLogic
 	 */
 	public function getOrder($id)
 	{
-		return Auth::user()->orders()->findOrFail($id);;
+		return Auth::user()->orders()->findOrFail($id);
 	}
 
 	/**

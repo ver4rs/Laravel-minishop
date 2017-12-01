@@ -32,7 +32,8 @@
                                 <td>
                                     {!! Form::open(['method' => 'PATCH', 'route'=> array('shopping.update', $item->id), 'id' => 'delete-form', 'style' => 'display: inline;']) !!}
                                     {{ csrf_field() }}
-                                    {!! Form::number('count', $item->count, ['class' => '']) !!}
+                                    {!! Form::number('count', $item->count, ['class' => '', 'min' => '1', 'max' => $item->product->count]) !!}
+
                                     {!! Form::button('update', ['type' => 'submit', 'class' => 'btn btn-small btn-warning', 'title' => 'delete']) !!}
                                     {!! Form::close() !!}
 
