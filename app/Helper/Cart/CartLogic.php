@@ -1,15 +1,24 @@
 <?php
 namespace App\Helper\Cart;
 
-use App\Cart;
-use App\CartItem;
-use App\Order;
-use App\OrderItem;
-use App\Product;
+use App\Repositories\Carts\CartsRepository;
+use App\Repositories\Orders\OrdersRepository;
+use App\Repositories\Products\ProductsRepository;
 use Illuminate\Support\Facades\Auth;
 
 class CartLogic
 {
+	protected $productsRepository;
+	protected $cartsRepository;
+	protected $ordersRepository;
+
+	public function __construct(ProductsRepository $productsRepository, CartsRepository $cartsRepository, OrdersRepository $ordersRepository)
+	{
+		$this->productsRepository = $productsRepository;
+		$this->cartsRepository = $cartsRepository;
+		$this->ordersRepository = $ordersRepository;
+	}
+
 	/**
 	 * Get cart by user
 	 * @param $userId
@@ -21,7 +30,7 @@ class CartLogic
 			return null;
 		}
 
-		$cart = Cart::getCartUser($userId)->first();
+		$cart = $this->cartsRepository->getCartByUser($userId);
 		return $cart;
 	}
 
@@ -48,9 +57,11 @@ class CartLogic
 	{
 		$cart = $this->getCartByUser($userId);
 
-		$items = $cart->items;
+		$items = $cart->items ?? null;
 
-		$this->verificationItems($items);
+		if ($items) {
+			$this->verificationItems($items);
+		}
 
 		return $items ?? null;
 	}
@@ -78,7 +89,7 @@ class CartLogic
 	/**
 	 * Make object Cart
 	 * @param $userId
-	 * @return Cart
+	 * @return \App\Cart
 	 */
 	private function makeCart($userId)
 	{
@@ -86,10 +97,11 @@ class CartLogic
 			return $cart;
 		}
 
-		$cart = new Cart;
-		$cart->user_id = $userId;
-		$cart->token = sha1(microtime());
-		$cart->save();
+		// save cart instance
+		$cart = $this->cartsRepository->save([
+			'user_id' => $userId,
+			'token' => sha1(microtime())
+		]);
 
 		return $cart;
 	}
@@ -112,15 +124,12 @@ class CartLogic
 
 	/**
 	 * Has item id into Shopping cart
-	 * @param $id
+	 * @param int $id item id
 	 */
 	public function hasItemCart($userId, $id)
 	{
-		$cartItems = CartItem::where('id', $id)
-			->whereHas('cart', function ($query) use($userId) {
-				$query->where('user_id', $userId);
-			})
-			->first();
+		$cartItems = $this->cartsRepository->getCartItemByUser($id, $userId);
+
 		return $cartItems ? true : false;
 	}
 
@@ -134,14 +143,12 @@ class CartLogic
 		$cart = $this->makeCart($userId);
 
 		if (!$this->hasItemCart($userId, $attributes['id'])) {
+
 			//	Add item to Shopping cart
-			$cartItem = new CartItem;
-			$cartItem->product_id = $attributes['id'];
-			$cartItem->count = $attributes['count'];
-			$cartItem->cart_id = $cart->id;
-			$cartItem->save();
+			$this->cartsRepository->saveCartItem($cart->id, $attributes);
+
 		} else {
-			$this->updateCountItem($attributes['id'], $attributes['count']);
+			$this->cartsRepository->updateCartItemByProductId($attributes['id'], $attributes['count']);
 		}
 	}
 
@@ -154,7 +161,7 @@ class CartLogic
 	public function getOrders($isAdmin = false)
 	{
 		if ($isAdmin) {
-			$orders = Order::all();
+			$orders = $this->ordersRepository->getAll();
 		} else {
 			$orders = Auth::user()->orders;
 		}
@@ -164,30 +171,32 @@ class CartLogic
 
 	private function makeOrder($userId, $attributes)
 	{
-		$order = new Order;
-		$order->user_id = $userId;
-		$order->name = $attributes['name'];
-		$order->city = $attributes['city'];
-		$order->address = $attributes['address'];
-		$order->price = $this->getTotalPriceFromCart($userId);
-		$order->save();
+		// Save instance order
+		$order = $this->ordersRepository->save([
+			'user_id' => $userId,
+			'name' => $attributes['name'],
+			'city' => $attributes['city'],
+			'address' => $attributes['address'],
+			'price' => $this->getTotalPriceFromCart($userId)
+		]);
 
 		return $order;
 	}
 
 	public function makeItemIntoOrder($orderId, $item)
 	{
-		$orderItem = new OrderItem;
-		$orderItem->order_id = $orderId;
-		$orderItem->product_id = $item->product->id;
-		$orderItem->count = $item->count;
-		$orderItem->save();
+		// Create item of order instance
+		$this->ordersRepository->saveOrderItem([
+			'order_id' => $orderId,
+			'product_id' => $item->product->id,
+			'count' => $item->count
+		]);
 
-		// update product
-		Product::updateCount($item->product->id, $item->product->count, $item->count);
+		// Update count product after made order
+		$this->productsRepository->updateById($item->product->id, ['count' => $item->product->count - $item->count]);
 
-		CartItem::destroy($item->id);
-
+		// Remove item of cart
+		$this->cartItemDestroy($item->id);
 	}
 
 	/**
@@ -197,7 +206,7 @@ class CartLogic
 	 */
 	private function getProduct($id)
 	{
-		return Product::findOrFail($id);
+		return $this->productsRepository->getById($id);
 	}
 
 	/**
@@ -206,21 +215,23 @@ class CartLogic
 	 */
 	private function cartDestroy($id)
 	{
-		Cart::destroy($id);
+		$this->cartsRepository->delete($id);
 	}
 	
 	public function cartItemDestroy($id)
 	{
-		CartItem::destroy($id);
+		$this->cartsRepository->deleteCartItem($id);
 	}
 
 	/**
 	 * Get Cart id
-	 * @param $userId
+	 * @param $token
 	 * @return mixed
 	 */
-	private function getCartId($userId)
+	private function getCartId($token = false)
 	{
+		//TODO:: implement token, when user is not logged
+
 		return Auth::user()->cart->id ?? null;
 	}
 
@@ -239,7 +250,7 @@ class CartLogic
 			$this->makeItemIntoOrder($order->id, $item);
 		}
 
-		$this->cartDestroy($this->getCartId($userId));
+		$this->cartDestroy($this->getCartId());
 	}
 
 	/**
@@ -259,7 +270,7 @@ class CartLogic
 	 */
 	public function changeStatusOrder($id, $status)
 	{
-		Order::findOrFail($id)
-			->update(['status' => $status]);
+		// Change attribute status on Order model
+		$this->ordersRepository->updateById($id, ['status' => $status]);
 	}
 }

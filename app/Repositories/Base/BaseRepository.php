@@ -64,4 +64,13 @@ class BaseRepository
 	{
 		return $this->getById($id)->delete();
 	}
+
+	/**
+	 * Change Sub model class
+	 * @param $nameClass
+	 */
+	public function changeSubModelClass($nameClass)
+	{
+		$this->modelClass = $nameClass;
+	}
 }

@@ -16,7 +16,7 @@ class CartController extends Controller
 	public function index()
 	{
 		$userId = Auth::user()->id;
-		$cartItems = CartLogic::getCartItems($userId);
+		$cartItems = CartLogic::getCartItems($userId) ?? [];
 		$total = CartLogic::getTotalPriceFromCart($userId);
 
 		return view('orders.list')->with(['cartItems' => $cartItems, 'total' => $total]);
