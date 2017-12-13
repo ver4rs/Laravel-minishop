@@ -2,6 +2,7 @@
 namespace App\Helper\StorageImages;
 
 use Illuminate\Support\Facades\Storage;
+use Webpatser\Uuid\Uuid;
 
 abstract class StorageImages
 {
@@ -24,10 +25,20 @@ abstract class StorageImages
 	 */
 	public static function saveImage($file, $disk = 'images', $path = 'products')
 	{
-		$name = sha1(microtime()) . $file->extension();
+		$name = self::getUuid() . $file->extension();
 		Storage::disk($disk)->putFileAs($path, $file, $name);
 
 		return $name;
 	}
 
+	/**
+	 * Get unique number string "uuid"
+	 * @return string
+	 * @throws \Exception
+	 */
+	private static function getUuid()
+	{
+		$uuid = Uuid::generate(4);
+		return $uuid->string;
+	}
 }

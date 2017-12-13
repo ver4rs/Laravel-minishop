@@ -5,6 +5,7 @@ use App\Repositories\Carts\CartsRepository;
 use App\Repositories\Orders\OrdersRepository;
 use App\Repositories\Products\ProductsRepository;
 use Illuminate\Support\Facades\Auth;
+use Webpatser\Uuid\Uuid;
 
 class CartLogic
 {
@@ -97,10 +98,12 @@ class CartLogic
 			return $cart;
 		}
 
+		$uuid = Uuid::generate(4)->string;
+
 		// save cart instance
 		$cart = $this->cartsRepository->save([
 			'user_id' => $userId,
-			'token' => sha1(microtime())
+			'token' => $uuid
 		]);
 
 		return $cart;
