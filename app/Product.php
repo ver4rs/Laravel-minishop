@@ -30,17 +30,4 @@ class Product extends Model
 		'updated_at',
 		'deleted_at',
 	];
-
-	/**
-	 * Update count of product id
-	 * @param $query
-	 * @param $productId
-	 * @param $number
-	 * @param $count
-	 * @return mixed
-	 */
-	public function scopeUpdateCount($query, $productId, $number, $count)
-	{
-		return $query->where('id', $productId)->update(['count' => $number - $count]);
-	}
 }
