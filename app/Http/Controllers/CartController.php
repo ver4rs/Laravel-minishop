@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helper\Cart\Fasades\CartLogic;
-use Illuminate\Http\Request;
+use App\Http\Requests\ItemRequest;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
@@ -24,30 +24,24 @@ class CartController extends Controller
 
 	/**
 	 * Store the specified resource in storage
-	 * @param Request $request
+	 * @param ItemRequest $request
 	 */
-	public function store(Request $request)
+	public function store(ItemRequest $request)
 	{
-		//TODO:: create request for validation product ID with count
-
 		CartLogic::addItemToCart(Auth::user()->id, $request->all());
 
 		return redirect()->route('shopping.index')->with('status', 'Item added to shopping list.');
 	}
 
 
-
 	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  \Illuminate\Http\Request  $request
-	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
+	 * Update the specified resource in storage
+	 * @param ItemRequest $request
+	 * @param $id
+	 * @return \Illuminate\Http\RedirectResponse
 	 */
-	public function update(Request $request, $id)
+	public function update(ItemRequest $request, $id)
 	{
-		//TODO:: Validate correct count of product
-
 		CartLogic::updateCountItem($id, $request->count);
 
 		return redirect()->route('shopping.index')->with('status', 'Product updated');

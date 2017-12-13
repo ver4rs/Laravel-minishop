@@ -117,5 +117,6 @@ return [
     */
 
     'attributes' => [],
+	'count_item' => 'Number :attribute must be smaller.',
 
 ];

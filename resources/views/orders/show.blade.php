@@ -41,10 +41,7 @@
                             </tr>
                         @endforelse
                             <tr>
-                                <td></td>
-                                <td></td>
-                                <td><strong>Total</strong></td>
-                                <td><strong>{{ $order->price . 'E' }}</strong></td>
+                                <td colspan="4"><strong>Total</strong>&nbsp;<strong>{{ $order->price . 'E' }}</strong></td>
                             </tr>
                         </tbody>
                     </table>
