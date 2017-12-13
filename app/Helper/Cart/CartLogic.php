@@ -253,7 +253,7 @@ class CartLogic
 			$this->makeItemIntoOrder($order->id, $item);
 		}
 
-		$this->cartDestroy($this->getCartId());
+//		$this->cartDestroy($this->getCartId());
 	}
 
 	/**

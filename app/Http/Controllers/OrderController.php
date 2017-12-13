@@ -33,6 +33,11 @@ class OrderController extends Controller
     {
         $userId = Auth::user()->id;
         $cartItems = CartLogic::getCartItems($userId);
+
+        if (!$cartItems) {
+        	return redirect()->route('shopping.index');
+		}
+
         $total = CartLogic::getTotalPriceFromCart($userId);
 
         return view('orders.checkout')->with(['cartItems' => $cartItems, 'total' => $total]);
