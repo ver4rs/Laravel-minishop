@@ -23,7 +23,7 @@ class ItemRequest extends FormRequest
      */
     public function rules()
     {
-    	$productId = $_REQUEST['id'] ?? 0;
+    	$productId = $this->input('id') ?? 0;
 
         return [
             'id' => 'required|numeric',

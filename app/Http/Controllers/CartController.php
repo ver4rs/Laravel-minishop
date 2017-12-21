@@ -55,7 +55,8 @@ class CartController extends Controller
 	 */
 	public function destroy($id)
 	{
-		CartLogic::cartItemDestroy($id);
+		$userId = Auth::user()->id;
+		CartLogic::cartItemDestroy($id, $userId);
 
 		return redirect()->route('shopping.index')->with('status', 'Product deleted');
 	}

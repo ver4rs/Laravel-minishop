@@ -16,13 +16,12 @@ class OrdersRepository extends BaseRepository
 
 	/**
 	 * Store Item of order
-	 * @param $attributes
+	 * @param int $orderId
+	 * @param array $attributes
 	 * @return mixed
 	 */
-	public function saveOrderItem($attributes)
+	public function saveOrderItem($orderId, $attributes)
 	{
-		$this->changeSubModelClass(\App\OrderItem::class);
-
-		return $this->save($attributes);
+		return $this->getById($orderId)->items()->create($attributes);
 	}
 }

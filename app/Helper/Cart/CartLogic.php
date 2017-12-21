@@ -38,12 +38,13 @@ class CartLogic
 	/**
 	 * Verification correct items inside basket
 	 * @param $items
+	 * @param $userId
 	 */
-	private function verificationItems(&$items)
+	private function verificationItems(&$items, $userId)
 	{
 		foreach ($items as $key => $item) {
 			if (!$item->product) {
-				$this->cartItemDestroy($item->id);
+				$this->cartItemDestroy($item->id, $userId);
 				$items->forget($key);
 			}
 		}
@@ -61,7 +62,7 @@ class CartLogic
 		$items = $cart->items ?? null;
 
 		if ($items) {
-			$this->verificationItems($items);
+			$this->verificationItems($items, $userId);
 		}
 
 		return $items ?? null;
@@ -151,7 +152,7 @@ class CartLogic
 			$this->cartsRepository->saveCartItem($cart->id, $attributes);
 
 		} else {
-			$this->cartsRepository->updateCartItemByProductId($attributes['id'], $attributes['count']);
+			$this->cartsRepository->updateCartItemByProductId($userId, $attributes['id'], $attributes['count']);
 		}
 	}
 
@@ -186,11 +187,16 @@ class CartLogic
 		return $order;
 	}
 
-	public function makeItemIntoOrder($orderId, $item)
+	/**
+	 * Store item into order
+	 * @param int $orderId
+	 * @param int $item
+	 * @param int $userId
+	 */
+	public function makeItemIntoOrder($orderId, $item, $userId)
 	{
 		// Create item of order instance
-		$this->ordersRepository->saveOrderItem([
-			'order_id' => $orderId,
+		$this->ordersRepository->saveOrderItem($orderId, [
 			'product_id' => $item->product->id,
 			'count' => $item->count
 		]);
@@ -199,7 +205,7 @@ class CartLogic
 		$this->productsRepository->updateById($item->product->id, ['count' => $item->product->count - $item->count]);
 
 		// Remove item of cart
-		$this->cartItemDestroy($item->id);
+		$this->cartItemDestroy($item->id, $userId);
 	}
 
 	/**
@@ -220,10 +226,15 @@ class CartLogic
 	{
 		$this->cartsRepository->delete($id);
 	}
-	
-	public function cartItemDestroy($id)
+
+	/**
+	 * Delete item of cart
+	 * @param int $id
+	 * @param int $userId
+	 */
+	public function cartItemDestroy($id, $userId)
 	{
-		$this->cartsRepository->deleteCartItem($id);
+		$this->cartsRepository->deleteCartItem($userId, $id);
 	}
 
 	/**
@@ -250,7 +261,7 @@ class CartLogic
 		$order = $this->makeOrder($userId, $attributes);
 
 		foreach ($cartItems as $item) {
-			$this->makeItemIntoOrder($order->id, $item);
+			$this->makeItemIntoOrder($order->id, $item, $userId);
 		}
 
 //		$this->cartDestroy($this->getCartId());

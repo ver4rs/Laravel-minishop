@@ -29,17 +29,15 @@ class CartsRepository extends BaseRepository
 
 	/**
 	 * Get item of cart by user id
-	 * @param int $itemId
+	 * @param int $productId
 	 * @param int $userId
 	 * @return mixed
 	 */
-	public function getCartItemByUser($itemId, $userId)
+	public function getCartItemByUser($productId, $userId)
 	{
-		$this->changeSubModelClass(\App\CartItem::class);
-
-		return $this->modelClass::where('product_id', $itemId)
-			->whereHas('cart', function ($query) use($userId) {
-				$query->where('user_id', $userId);
+		return $this->getCartByUser($userId)
+			->whereHas('items', function ($query) use ($productId) {
+				$query->where('product_id', $productId);
 			})
 			->first();
 	}
@@ -52,38 +50,34 @@ class CartsRepository extends BaseRepository
 	 */
 	public function saveCartItem($cartId, $attributes)
 	{
-		$this->changeSubModelClass(\App\CartItem::class);
-
-		return $this->save([
+		return $this->getById($cartId)->items()->create([
 			'product_id' => $attributes['id'],
 			'count' => $attributes['count'],
-			'cart_id' => $cartId
 		]);
 	}
 
 	/**
 	 * Update item of cart by product id
+	 * @param int $userId
 	 * @param int $productId
 	 * @param int $count
 	 * @return mixed
 	 */
-	public function updateCartItemByProductId($productId, $count)
+	public function updateCartItemByProductId($userId, $productId, $count)
 	{
-		$this->changeSubModelClass(\App\CartItem::class);
-
-		return $this->modelClass::where('product_id', $productId)
+		return $this->getCartItemByUser($productId, $userId)
 			->update(['count' => $count]);
 	}
 
 	/**
 	 * Delete item of cart
+	 * @param int $userId
 	 * @param int $itemId
 	 * @return mixed
 	 */
-	public function deleteCartItem($itemId)
+	public function deleteCartItem($userId, $itemId)
 	{
-		$this->changeSubModelClass(\App\CartItem::class);
-
-		return $this->delete($itemId);
+		return $this->getCartByUser($userId)
+			->items()->delete($itemId);
 	}
 }
